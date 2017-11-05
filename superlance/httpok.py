@@ -101,6 +101,7 @@ httpok.py -p program1 -p group1:program2 http://localhost:8080/tasty
 """
 
 import getopt
+import httplib
 import os
 import socket
 import sys
@@ -112,7 +113,6 @@ from supervisor import childutils
 from supervisor.states import ProcessStates
 from supervisor.options import make_namespec
 
-from superlance import timeoutconn
 
 def usage(exitstatus=255):
     print(doc)
@@ -158,9 +158,9 @@ class HTTPOk:
         if self.connclass:
             ConnClass = self.connclass
         elif scheme == 'http':
-            ConnClass = timeoutconn.TimeoutHTTPConnection
+            ConnClass = httplib.HTTPConnection
         elif scheme == 'https':
-            ConnClass = timeoutconn.TimeoutHTTPSConnection
+            ConnClass = httplib.HTTPSConnection
         else:
             raise ValueError('Bad scheme %s' % scheme)
 
@@ -176,8 +176,7 @@ class HTTPOk:
                     break
                 continue
 
-            conn = ConnClass(hostport)
-            conn.timeout = self.timeout
+            conn = ConnClass(hostport, timeout=self.timeout)
 
             specs = self.listProcesses(ProcessStates.RUNNING)
             if self.eager or len(specs) > 0:
