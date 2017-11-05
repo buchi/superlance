@@ -190,7 +190,7 @@ class HTTPOk:
                             conn.request('GET', path, headers=headers)
                             break
                         except socket.error as e:
-                            if e.errno == 111 and will_retry:
+                            if will_retry:
                                 time.sleep(self.retry_time)
                             else:
                                 raise
