@@ -188,16 +188,21 @@ class HTTPOk:
                         try:
                             headers = {'User-Agent': 'httpok'}
                             conn.request('GET', path, headers=headers)
+                            res = conn.getresponse()
+                            body = res.read()
+                            status = res.status
                             break
                         except socket.error as e:
                             if will_retry:
                                 time.sleep(self.retry_time)
                             else:
                                 raise
+                        except httplib.HTTPException as e:
+                            if will_retry:
+                                time.sleep(self.retry_time)
+                            else:
+                                raise
 
-                    res = conn.getresponse()
-                    body = res.read()
-                    status = res.status
                     msg = 'status contacting %s: %s %s' % (self.url,
                                                            res.status,
                                                            res.reason)
