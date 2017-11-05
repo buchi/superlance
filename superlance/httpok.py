@@ -100,6 +100,7 @@ httpok.py -p program1 -p group1:program2 http://localhost:8080/tasty
 
 """
 
+import datetime
 import getopt
 import httplib
 import os
@@ -236,7 +237,7 @@ class HTTPOk:
         messages = [msg]
 
         def write(msg):
-            self.stderr.write('%s\n' % msg)
+            self.stderr.write('%s %s\n' % (datetime.datetime.now().isoformat(), msg))
             self.stderr.flush()
             messages.append(msg)
 
@@ -288,7 +289,7 @@ class HTTPOk:
         body += msg
         with os.popen(self.sendmail, 'w') as m:
             m.write(body)
-        self.stderr.write('Mailed:\n\n%s' % body)
+        self.stderr.write('%s Mailed:\n\n%s' % (datetime.datetime.now().isoformat(), body))
         self.mailed = body
 
     def restart(self, spec, write):
